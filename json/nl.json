@@ -211,7 +211,7 @@
 	"Movie.helpText10": "Maak een filmpje over wat je maar wilt. Je hebt een groot aantal nieuwe blokken tot je beschikking. Veel plezier!",
 	"Movie.helpText10Reddit": "Gebruik de knop \"Galerij bekijken\" om de filmpjes te bekijken die andere mensen hebben gemaakt. Als je zelf een interessant filmpje hebt gemaakt, klik dan op de knop \"In galerij opslaan\" om het te delen.",
 	"Music.playNoteTooltip": "Speelt één muzieknoot met de opgegeven duur en toonhoogte.",
-	"Music.playNote": "speel %1 toon %2",
+	"Music.playNote": "speel %1 toonhoogte %2",
 	"Music.restTooltip": "Wacht de ingestelde tijd.",
 	"Music.restWholeTooltip": "Wacht een hele noot.",
 	"Music.rest": "rust %1",
