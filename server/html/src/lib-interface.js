@@ -208,8 +208,11 @@ BlocklyInterface.saveToLocalStorage = function() {
  * Go to the index page.
  */
 BlocklyInterface.indexPage = function() {
-  // Get parent path instead of iframe path
-  var path = window.parent.location.pathname;
+  // Get the top-most window (breaks out of all iframes)
+  var topWindow = window.top;
+
+  // Get path from the top window
+  var path = topWindow.location.pathname;
 
   // Remove trailing slash if present
   path = path.replace(/\/$/, '');
@@ -222,8 +225,8 @@ BlocklyInterface.indexPage = function() {
     parentPath = '/';
   }
 
-  // Redirect parent window
-  window.parent.location = parentPath + '?lang=' + BlocklyGames.LANG;
+  // Redirect top window
+  topWindow.location = parentPath + '?lang=' + BlocklyGames.LANG;
 };
 
 /**
