@@ -208,22 +208,22 @@ BlocklyInterface.saveToLocalStorage = function() {
  * Go to the index page.
  */
 BlocklyInterface.indexPage = function() {
-  // Get current path, e.g. /primary/coding/puzzle
-  var path = window.location.pathname;
+  // Get parent path instead of iframe path
+  var path = window.parent.location.pathname;
 
   // Remove trailing slash if present
   path = path.replace(/\/$/, '');
 
-  // Remove last segment (e.g. /puzzle)
+  // Remove last segment
   var parentPath = path.substring(0, path.lastIndexOf('/'));
 
-  // Fallback to root if somehow empty
+  // Fallback to root if empty
   if (!parentPath) {
     parentPath = '/';
   }
 
-  // Redirect
-  window.location = parentPath + '?lang=' + BlocklyGames.LANG;
+  // Redirect parent window
+  window.parent.location = parentPath + '?lang=' + BlocklyGames.LANG;
 };
 
 /**
