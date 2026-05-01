@@ -75,39 +75,10 @@ BlocklyGames.html.headerBar = function(ij, appName, levelLinkSuffix,
  * @private
  */
 BlocklyGames.html.titleSpan_ = function(ij, appName) {
-  let path;
-
-  try {
-    path = window.top.location.pathname;
-  } catch (e) {
-    path = window.location.pathname;
-  }
-
-  path = path
-    .replace(/\/$/, '')
-    .replace(/\/[^\/]*$/, '');
-
-  const url = `${path}?lang=${ij.lang}`;
-
   return `
 <span id="title">
-  <a href="#" id="dc360Home">DC360 Coding Game</a> : ${appName}
+  DC360 Coding Game : ${appName}
 </span>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var el = document.getElementById('dc360Home');
-    if (el) {
-      el.addEventListener('click', function (e) {
-        e.preventDefault();
-        try {
-          window.top.location.href = '${url}';
-        } catch (err) {
-          window.location.href = '${url}';
-        }
-      });
-    }
-  });
-</script>
 `;
 };
 
