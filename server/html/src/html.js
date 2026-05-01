@@ -75,9 +75,24 @@ BlocklyGames.html.headerBar = function(ij, appName, levelLinkSuffix,
  * @private
  */
 BlocklyGames.html.titleSpan_ = function(ij, appName) {
+  let path;
+
+  try {
+    // Get top (parent) path
+    path = window.top.location.pathname;
+  } catch (e) {
+    // Fallback if iframe restrictions
+    path = window.location.pathname;
+  }
+
+  // Remove trailing slash, then remove last segment
+  path = path
+    .replace(/\/$/, '')
+    .replace(/\/[^\/]*$/, '');
+
   return `
 <span id="title">
-  <a href="${window.location.pathname.replace(/\/[^\/]*$/, '')}?lang=${ij.lang}">DC360 Coding Game</a> : ${appName}
+  <a href="${path}?lang=${ij.lang}">DC360 Coding Game</a> : ${appName}
 </span>
 `;
 };
