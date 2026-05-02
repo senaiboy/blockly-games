@@ -1566,4 +1566,6 @@ function notDone() {
   return pegmanX !== finish_.x || pegmanY !== finish_.y;
 }
 
-BlocklyGames.callWhenLoaded(init);
+BlocklyGames.loadProgressFromDb(BlocklyGames.storageName).then(function() {
+  BlocklyGames.callWhenLoaded(init);
+});
