@@ -213,7 +213,7 @@ BlocklyGames.getIntegerParamFromUrl = function(name, minValue, maxValue) {
 };
 
 /**
- * Name of app ('maze', 'bird', ...) for use in local storage.
+ * Name of app ('maze', 'bird', ...) for use in storage.
  * @type string
  */
 BlocklyGames.storageName;
@@ -229,6 +229,99 @@ BlocklyGames.MAX_LEVEL = 20;
  */
 BlocklyGames.LEVEL =
     BlocklyGames.getIntegerParamFromUrl('level', 1, BlocklyGames.MAX_LEVEL);
+
+/**
+ * In-memory cache of all progress for the current app, keyed by level number.
+ * Populated once by BlocklyGames.loadProgressFromDb before init runs.
+ * Shape: { 1: '<xml>...</xml>', 3: '<xml>...</xml>', ... }
+ * @type {Object<number, string>}
+ * @private
+ */
+BlocklyGames.progressCache_ = {};
+
+/**
+ * Whether the DB progress has been loaded yet.
+ * @type {boolean}
+ * @private
+ */
+BlocklyGames.progressLoaded_ = false;
+
+/**
+ * The Joomla user ID.  Must be set by the page before calling
+ * BlocklyGames.loadProgressFromDb (e.g. window.BlocklyGamesUserId = <?php echo $user->id; ?>).
+ * @type {number}
+ */
+BlocklyGames.USER_ID = window['BlocklyGamesUserId'] || 0;
+
+/**
+ * Fetch all saved progress for this app from the database and populate
+ * the in-memory cache.  Returns a Promise so callers can await it before
+ * rendering the game.
+ *
+ * Your read_progress.php should accept:
+ *   GET ?user_id=123&app=maze
+ * and return JSON like:
+ *   {"1": "<xml>...</xml>", "3": "<xml>...</xml>"}
+ * or an empty object {} if no progress exists yet.
+ *
+ * @param {string} app The app/storageName (e.g. 'maze').
+ * @returns {!Promise<void>}
+ */
+BlocklyGames.loadProgressFromDb = function(app) {
+  const url = 'read_progress.php?user_id=' + encodeURIComponent(BlocklyGames.USER_ID) +
+      '&app=' + encodeURIComponent(app);
+  return fetch(url)
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('read_progress.php returned ' + response.status);
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        // Normalise keys to integers.
+        BlocklyGames.progressCache_ = {};
+        for (const level in data) {
+          if (data[level]) {
+            BlocklyGames.progressCache_[parseInt(level, 10)] = data[level];
+          }
+        }
+        BlocklyGames.progressLoaded_ = true;
+      })
+      .catch(function(err) {
+        // Non-fatal: fall back to empty cache so the game still loads.
+        console.warn('Could not load progress from DB:', err);
+        BlocklyGames.progressCache_ = {};
+        BlocklyGames.progressLoaded_ = true;
+      });
+};
+
+/**
+ * Read a saved level from the in-memory cache (previously loaded from DB).
+ * Drop-in replacement for the old localStorage read.
+ * Returns the saved XML/JS string, or undefined if nothing was saved.
+ *
+ * @param {string} name App name (must match what was passed to loadProgressFromDb).
+ * @param {number} level Level number.
+ * @returns {string|undefined}
+ */
+BlocklyGames.loadFromLocalStorage = function(name, level) {
+  // 'name' is included for API compatibility but the cache is already
+  // app-scoped from loadProgressFromDb.
+  return BlocklyGames.progressCache_[level] || undefined;
+};
+
+/**
+ * Write a saved level into the in-memory cache so that subsequent calls to
+ * loadFromLocalStorage (e.g. the "inherit previous level" path) see the
+ * freshly-saved value without needing another round-trip to the server.
+ * The actual network save is handled by BlocklyInterface.saveToDb.
+ *
+ * @param {number} level Level number.
+ * @param {string} code Serialised XML or JS.
+ */
+BlocklyGames.writeToCache_ = function(level, code) {
+  BlocklyGames.progressCache_[level] = code;
+};
 
 /**
  * Common startup tasks for all apps.
@@ -272,6 +365,7 @@ BlocklyGames.init = function(title) {
   }
 
   // Highlight levels that have been completed.
+  // progressCache_ is already populated by loadProgressFromDb at this point.
   for (let i = 1; i <= BlocklyGames.MAX_LEVEL; i++) {
     const link = BlocklyGames.getElementById('level' + i);
     const done = !!BlocklyGames.loadFromLocalStorage(BlocklyGames.storageName, i);
@@ -327,24 +421,6 @@ BlocklyGames.changeLanguage = function() {
 
   window.location = window.location.protocol + '//' +
       window.location.host + window.location.pathname + search;
-};
-
-/**
- * Attempt to fetch the saved blocks for a level.
- * May be used to simply determine if a level is complete.
- * @param {string} name Name of app (maze, bird, ...).
- * @param {number} level Level (1-10).
- * @returns {string|undefined} Serialized XML, or undefined.
- */
-BlocklyGames.loadFromLocalStorage = function(name, level) {
-  let xml;
-  try {
-    xml = window.localStorage[name + level];
-  } catch (e) {
-    // Firefox sometimes throws a SecurityError when accessing localStorage.
-    // Restarting Firefox fixes this, so it looks like a bug.
-  }
-  return xml;
 };
 
 /**
