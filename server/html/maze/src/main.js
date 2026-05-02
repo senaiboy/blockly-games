@@ -33,7 +33,7 @@ goog.require('Maze.html');
 BlocklyGames.storageName = 'maze';
 
 const MAX_BLOCKS =
-    [Infinity, Infinity, 2, Infinity, 5, Infinity, 5, 5, Infinity, 5, 5, Infinity, 10, 7, 10, Infinity, 10, 12, 15, 20][BlocklyGames.LEVEL - 1];
+    [Infinity, Infinity, 2, 5, 5, 6, 6, 5, 5, 5, 6, 7, 10, 7, 8, 10, 10, 12, 15, 20][BlocklyGames.LEVEL - 1];
 
 // Crash type constants.
 const CRASH_STOP = 1;
@@ -97,7 +97,7 @@ const SquareType = {
 // The maze square constants defined above are inlined here
 // for ease of reading and writing the static mazes.
 const map = [
-// Level 1. (straight path - 1 move)
+// Level 1. (straight, 1 step - absolute intro)
  [[0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0],
@@ -105,7 +105,7 @@ const map = [
   [0, 0, 2, 1, 3, 0, 0],
   [0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0]],
-// Level 2. (one turn)
+// Level 2. (L-shape, 1 turn, 2 steps - intro to turning)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -114,7 +114,7 @@ const map = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 3. (straight, longer path)
+// Level 3. (straight long, 4 steps - intro to loops, limit forces forever block)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -123,34 +123,16 @@ const map = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 4. NEW EASY (simple L-turn with extra blocks)
+// Level 4. (L down then right, 1 turn, 6 steps - longer L with loop)
  [[0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 3, 0, 0, 0],
-  [0, 0, 0, 0, 1, 0, 0, 0],
-  [0, 0, 2, 1, 1, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 2, 0, 0, 0, 0],
+  [0, 0, 0, 1, 0, 0, 0, 0],
+  [0, 0, 0, 1, 0, 0, 0, 0],
+  [0, 0, 0, 1, 0, 0, 0, 0],
+  [0, 0, 0, 1, 1, 1, 3, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 5. (diagonal staircase)
- [[0, 0, 0, 0, 0, 0, 0, 1],
-  [0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 3, 1, 0],
-  [0, 0, 0, 0, 1, 1, 0, 0],
-  [0, 0, 0, 1, 1, 0, 0, 0],
-  [0, 0, 1, 1, 0, 0, 0, 0],
-  [0, 2, 1, 0, 0, 0, 0, 0],
-  [1, 1, 0, 0, 0, 0, 0, 0]],
-// Level 6. NEW EASY (S-bend, gentle)
- [[0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 3, 0, 0],
-  [0, 0, 0, 0, 1, 1, 0, 0],
-  [0, 0, 0, 1, 1, 0, 0, 0],
-  [0, 0, 2, 1, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 7. (L going up)
+// Level 5. (L up, 1 turn, 6 steps - same length different direction)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 3, 0, 0],
   [0, 0, 0, 0, 0, 1, 0, 0],
@@ -159,16 +141,16 @@ const map = [
   [0, 0, 0, 0, 0, 1, 0, 0],
   [0, 0, 0, 2, 1, 1, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 8. (loop path)
+// Level 6. (Z-shape, 2 turns, 6 steps - first 2-turn maze)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 1, 1, 1, 0, 0],
-  [0, 1, 0, 0, 0, 1, 0, 0],
-  [0, 1, 1, 3, 0, 1, 0, 0],
-  [0, 0, 0, 0, 0, 1, 0, 0],
-  [0, 2, 1, 1, 1, 1, 0, 0],
+  [0, 0, 3, 1, 1, 0, 0, 0],
+  [0, 0, 0, 0, 1, 0, 0, 0],
+  [0, 0, 0, 0, 1, 0, 0, 0],
+  [0, 0, 0, 0, 1, 1, 2, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 9. NEW EASY (U-shape, clear path)
+// Level 7. (U-shape, 2 turns, 6 steps - same turns as 6, different shape)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 2, 0, 0, 3, 0, 0],
   [0, 0, 1, 0, 0, 1, 0, 0],
@@ -177,7 +159,25 @@ const map = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 10. (branch path)
+// Level 8. (rectangle loop, 4 turns, 10 steps - intro to if-block, clear repeating pattern)
+ [[0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 1, 1, 1, 1, 1, 0, 0],
+  [0, 1, 0, 0, 0, 1, 0, 0],
+  [0, 1, 1, 3, 0, 1, 0, 0],
+  [0, 0, 0, 0, 0, 1, 0, 0],
+  [0, 2, 1, 1, 1, 1, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0]],
+// Level 9. (diagonal staircase, 8 turns, 9 steps - needs tight loop)
+ [[0, 0, 0, 0, 0, 0, 0, 1],
+  [0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 3, 1, 0],
+  [0, 0, 0, 0, 1, 1, 0, 0],
+  [0, 0, 0, 1, 1, 0, 0, 0],
+  [0, 0, 1, 1, 0, 0, 0, 0],
+  [0, 2, 1, 0, 0, 0, 0, 0],
+  [1, 1, 0, 0, 0, 0, 0, 0]],
+// Level 10. (branch path, needs if-block - first conditional level)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 1, 1, 0],
   [0, 2, 1, 1, 1, 1, 0, 0],
@@ -186,16 +186,7 @@ const map = [
   [0, 1, 0, 1, 0, 1, 0, 0],
   [0, 1, 1, 1, 1, 1, 1, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 11. (S-maze)
- [[0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 1, 1, 0, 0, 0],
-  [0, 1, 0, 0, 1, 1, 0, 0],
-  [0, 1, 1, 1, 0, 1, 0, 0],
-  [0, 0, 0, 1, 0, 1, 0, 0],
-  [0, 2, 1, 1, 0, 3, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 12. NEW EASY (wide zigzag with extra blocks)
+// Level 11. (wide zigzag, 4 turns, 7 steps - easier than S-maze, good stepping stone)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 3, 0, 0],
   [0, 0, 0, 0, 1, 1, 0, 0],
@@ -204,7 +195,16 @@ const map = [
   [0, 0, 1, 1, 0, 0, 0, 0],
   [0, 2, 1, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 13. (complex branch)
+// Level 12. (S-maze, 7 turns, 9 steps - more complex winding)
+ [[0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 1, 1, 1, 1, 0, 0, 0],
+  [0, 1, 0, 0, 1, 1, 0, 0],
+  [0, 1, 1, 1, 0, 1, 0, 0],
+  [0, 0, 0, 1, 0, 1, 0, 0],
+  [0, 2, 1, 1, 0, 3, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0]],
+// Level 13. (complex branch, needs if-else - intro to ifElse)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 1, 1, 1, 1, 1, 0, 0],
   [0, 0, 1, 0, 0, 0, 0, 0],
@@ -213,16 +213,7 @@ const map = [
   [1, 1, 1, 1, 1, 0, 1, 0],
   [0, 1, 0, 1, 0, 2, 1, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 14. (complex grid)
- [[0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 0, 3, 0, 1, 0],
-  [0, 1, 1, 0, 1, 1, 1, 0],
-  [0, 1, 0, 1, 0, 1, 0, 0],
-  [0, 1, 1, 1, 1, 1, 1, 0],
-  [0, 0, 0, 1, 0, 0, 1, 0],
-  [0, 2, 1, 1, 1, 0, 1, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 15. (spiral entry)
+// Level 14. (spiral entry, 4 turns - easier shape but tighter limit)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 1, 1, 1, 1, 0, 0],
@@ -231,7 +222,16 @@ const map = [
   [0, 0, 1, 1, 1, 0, 0, 0],
   [0, 2, 1, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 16. NEW EASY (open spiral, more blocks)
+// Level 15. (complex grid, 8 turns - wall-follow modal intro)
+ [[0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 1, 1, 0, 3, 0, 1, 0],
+  [0, 1, 1, 0, 1, 1, 1, 0],
+  [0, 1, 0, 1, 0, 1, 0, 0],
+  [0, 1, 1, 1, 1, 1, 1, 0],
+  [0, 0, 0, 1, 0, 0, 1, 0],
+  [0, 2, 1, 1, 1, 0, 1, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0]],
+// Level 16. (open spiral, 6 turns - more complex spiral, intro to harder patterns)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 1, 1, 1, 0, 1, 3, 0],
   [0, 1, 0, 1, 0, 1, 0, 0],
@@ -240,7 +240,7 @@ const map = [
   [0, 1, 1, 1, 1, 1, 0, 0],
   [0, 2, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 17. (multi-branch)
+// Level 17. (multi-branch, 7 turns - needs if-else and loops)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 3, 1, 0, 1, 1, 1, 0],
   [0, 0, 1, 1, 1, 0, 1, 0],
@@ -249,7 +249,7 @@ const map = [
   [0, 1, 0, 0, 0, 0, 1, 0],
   [0, 1, 1, 1, 1, 1, 1, 0],
   [0, 0, 0, 2, 0, 0, 0, 0]],
-// Level 18. (crossing paths)
+// Level 18. (crossing paths, 7 turns - multiple decision points)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 2, 1, 1, 0, 1, 1, 0],
   [0, 0, 0, 1, 0, 1, 0, 0],
@@ -258,7 +258,7 @@ const map = [
   [0, 1, 1, 0, 1, 0, 1, 0],
   [0, 0, 1, 1, 1, 0, 3, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 19. (tall winding maze)
+// Level 19. (tall winding, 8 turns - long complex path)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 1, 0, 1, 1, 1, 3, 0],
   [0, 1, 0, 1, 0, 0, 0, 0],
@@ -268,7 +268,7 @@ const map = [
   [0, 1, 0, 0, 0, 1, 0, 0],
   [0, 2, 1, 1, 1, 1, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 20. (dense maze boss level)
+// Level 20. (dense boss, 10 turns - hardest level)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 2, 1, 0, 1, 0, 1, 0],
   [0, 0, 1, 0, 1, 0, 1, 0],
@@ -603,10 +603,10 @@ function init() {
     Blockly.SNAP_RADIUS *= 2;
     Blockly.CONNECTING_SNAP_RADIUS = Blockly.SNAP_RADIUS;
   }
-  if (BlocklyGames.LEVEL === 10) {
+  if (BlocklyGames.LEVEL === 15) {
     if (!BlocklyGames.loadFromLocalStorage(BlocklyGames.storageName,
                                            BlocklyGames.LEVEL)) {
-      // Level 10 gets an introductory modal dialog.
+      // Level 14 gets an introductory modal dialog.
       // Skip the dialog if the user has already won.
       const content = BlocklyGames.getElementById('dialogHelpWallFollow');
       const style = {
@@ -706,7 +706,7 @@ function levelHelp(opt_event) {
       style[rtl ? 'right' : 'left'] = '400px';
       origin = BlocklyGames.getElementById('resetButton');
     }
-  } else if (BlocklyGames.LEVEL === 3) {
+  } else if (BlocklyGames.LEVEL === 4) {
     if (!userBlocks.includes('maze_forever')) {
       if (!BlocklyInterface.workspace.remainingCapacity()) {
         content = BlocklyGames.getElementById('dialogHelpCapacity');
@@ -720,7 +720,7 @@ function levelHelp(opt_event) {
         origin = toolbar[3].getSvgRoot();
       }
     }
-  } else if (BlocklyGames.LEVEL === 4) {
+  } else if (BlocklyGames.LEVEL === 5) {
     if (!BlocklyInterface.workspace.remainingCapacity() &&
         (!userBlocks.includes('maze_forever') ||
          BlocklyInterface.workspace.getTopBlocks(false).length > 1)) {
@@ -752,22 +752,22 @@ function levelHelp(opt_event) {
         origin = toolbar[3].getSvgRoot();
       }
     }
-  } else if (BlocklyGames.LEVEL === 5) {
+  } else if (BlocklyGames.LEVEL === 7) {
     if (SKIN_ID === 0 && !showPegmanMenu.activatedOnce) {
       content = BlocklyGames.getElementById('dialogHelpSkins');
       style = {'width': '360px', 'top': '60px'};
       style[rtl ? 'left' : 'right'] = '20px';
       origin = BlocklyGames.getElementById('pegmanButton');
     }
-  } else if (BlocklyGames.LEVEL === 6) {
+  } else if (BlocklyGames.LEVEL === 8) {
     if (!userBlocks.includes('maze_if')) {
       content = BlocklyGames.getElementById('dialogHelpIf');
       style = {'width': '360px', 'top': '430px'};
       style[rtl ? 'right' : 'left'] = '425px';
       origin = toolbar[4].getSvgRoot();
     }
-  } else if (BlocklyGames.LEVEL === 7) {
-    if (!levelHelp.initialized7_) {
+  } else if (BlocklyGames.LEVEL === 10) {
+    if (!levelHelp.initialized10_) {
       // Create fake dropdown.
       const span = document.createElement('span');
       span.className = 'helpMenuFake';
@@ -797,7 +797,7 @@ function levelHelp(opt_event) {
           container.appendChild(span.cloneNode(true));
         }
       }
-      levelHelp.initialized7_ = true;
+      levelHelp.initialized10_ = true;
     }
     // The hint says to change from 'ahead', but keep the hint visible
     // until the user chooses 'right'.
@@ -807,7 +807,7 @@ function levelHelp(opt_event) {
       style[rtl ? 'right' : 'left'] = '425px';
       origin = toolbar[4].getSvgRoot();
     }
-  } else if (BlocklyGames.LEVEL === 9) {
+  } else if (BlocklyGames.LEVEL === 13) {
     if (!userBlocks.includes('maze_ifElse')) {
       content = BlocklyGames.getElementById('dialogHelpIfElse');
       style = {'width': '360px', 'top': '305px'};
