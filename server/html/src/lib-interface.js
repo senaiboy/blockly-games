@@ -104,6 +104,7 @@ BlocklyInterface.loadBlocks = function(defaultXml, inherit) {
     delete window.sessionStorage.loadOnceBlocks;
   }
 
+  // Read from the in-memory cache (pre-loaded from DB by loadProgressFromDb).
   const savedLevel =
       BlocklyGames.loadFromLocalStorage(BlocklyGames.storageName,
                                         BlocklyGames.LEVEL);
@@ -193,16 +194,57 @@ BlocklyInterface.injectBlockly = function(options) {
 };
 
 /**
- * Save the blocks/JS for this level to persistent client-side storage.
+ * Save the blocks/JS for this level to the database.
+ *
+ * Sends a POST to save_progress.php with:
+ *   user_id  - Joomla user ID (window.BlocklyGamesUserId)
+ *   app      - game name (BlocklyGames.storageName, e.g. 'maze')
+ *   level    - current level number
+ *   code     - serialised XML or JS from the editor
+ *
+ * Also writes into the in-memory cache so that if the player advances to the
+ * next level and it inherits the previous level's blocks, loadBlocks() finds
+ * the data without a second round-trip.
+ *
+ * Renamed from saveToLocalStorage; all existing callers use this name via
+ * the alias at the bottom of this function.
  */
-BlocklyInterface.saveToLocalStorage = function() {
-  // MSIE 11 does not support localStorage on file:// URLs.
-  if (!window.localStorage) {
+BlocklyInterface.saveToDb = function() {
+  const code = BlocklyInterface.executedCode;
+  if (!code) {
     return;
   }
-  const name = BlocklyGames.storageName + BlocklyGames.LEVEL;
-  window.localStorage[name] = BlocklyInterface.executedCode;
+
+  const level = BlocklyGames.LEVEL;
+  const app   = BlocklyGames.storageName;
+
+  // Update the in-memory cache immediately so the next level can inherit
+  // these blocks synchronously from loadBlocks() without waiting for the
+  // network response.
+  BlocklyGames.writeToCache_(level, code);
+
+  const params = 'user_id=' + encodeURIComponent(BlocklyGames.USER_ID) +
+      '&app='     + encodeURIComponent(app) +
+      '&level='   + encodeURIComponent(level) +
+      '&code='    + encodeURIComponent(code);
+
+  fetch('save_progress.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: params,
+  }).then(function(response) {
+    if (!response.ok) {
+      console.error('save_progress.php returned ' + response.status);
+    }
+  }).catch(function(err) {
+    console.error('Could not save progress to DB:', err);
+  });
 };
+
+/**
+ * Alias so any game code that still calls saveToLocalStorage() keeps working.
+ */
+BlocklyInterface.saveToLocalStorage = BlocklyInterface.saveToDb;
 
 /**
  * Go to the index page.
@@ -230,7 +272,7 @@ BlocklyInterface.indexPage = function() {
 };
 
 /**
- * Save the blocks/code for a one-time reload.
+ * Save the blocks/code for a one-time reload (used during language switching).
  */
 BlocklyInterface.saveToSessionStorage = function() {
   // Store the blocks for the duration of the reload.
@@ -250,6 +292,8 @@ BlocklyInterface.changeLanguage = function() {
 
 /**
  * Go to the next level.
+ * The DB save has already happened (saveToDb is called by each game when the
+ * level is completed, before nextLevel is called), so we just navigate.
  */
 BlocklyInterface.nextLevel = function() {
   if (BlocklyGames.LEVEL < BlocklyGames.MAX_LEVEL) {
