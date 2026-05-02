@@ -78,11 +78,11 @@ Maze.html.toolbox_ = function(level) {
 `;
   if (level > 2) {
     xml += '<block type="maze_forever"></block>\n';
-    if (level === 6) {
+    if (level === 8) {
       xml += '<block type="maze_if"><field name="DIR">isPathLeft</field></block>\n';
-    } else if (level > 6) {
+    } else if (level > 8) {
       xml += '<block type="maze_if"></block>\n';
-      if (level > 8) {
+      if (level > 12) {
         xml += '<block type="maze_ifElse"></block>\n';
       }
     }
