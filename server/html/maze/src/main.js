@@ -33,7 +33,7 @@ goog.require('Maze.html');
 BlocklyGames.storageName = 'maze';
 
 const MAX_BLOCKS =
-    [Infinity, Infinity, 2, 5, 5, 6, 6, 5, 5, 5, 6, 7, 10, 7, 8, 10, 10, 12, 15, 20][BlocklyGames.LEVEL - 1];
+    [Infinity, Infinity, 2, 8, 5, 10, 6, 5, 5, 5, 6, 7, 10, 7, 8, 10, 10, 12, 15, 20][BlocklyGames.LEVEL - 1];
 
 // Crash type constants.
 const CRASH_STOP = 1;
@@ -141,13 +141,13 @@ const map = [
   [0, 0, 0, 0, 0, 1, 0, 0],
   [0, 0, 0, 2, 1, 1, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 6. (Z-shape, 2 turns, 6 steps - first 2-turn maze)
+// Level 6. (Z-shape, 2 turns - start left, go right, drop down, go right to goal)
  [[0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 3, 1, 1, 0, 0, 0],
+  [0, 0, 2, 1, 1, 0, 0, 0],
   [0, 0, 0, 0, 1, 0, 0, 0],
   [0, 0, 0, 0, 1, 0, 0, 0],
-  [0, 0, 0, 0, 1, 1, 2, 0],
+  [0, 0, 0, 0, 1, 1, 3, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
 // Level 7. (U-shape, 2 turns, 6 steps - same turns as 6, different shape)
@@ -195,14 +195,14 @@ const map = [
   [0, 0, 1, 1, 0, 0, 0, 0],
   [0, 2, 1, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
-// Level 12. (S-maze, 7 turns, 9 steps - more complex winding)
+// Level 12. (N-shape, 4 turns - go right, up, right, up - distinct from level 11's zigzag)
  [[0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 1, 1, 0, 0, 0],
-  [0, 1, 0, 0, 1, 1, 0, 0],
-  [0, 1, 1, 1, 0, 1, 0, 0],
-  [0, 0, 0, 1, 0, 1, 0, 0],
-  [0, 2, 1, 1, 0, 3, 0, 0],
+  [0, 0, 0, 0, 3, 1, 1, 0],
+  [0, 0, 0, 0, 1, 0, 0, 0],
+  [0, 0, 0, 0, 1, 0, 0, 0],
+  [0, 0, 1, 1, 1, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0],
+  [0, 2, 1, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0]],
 // Level 13. (complex branch, needs if-else - intro to ifElse)
  [[0, 0, 0, 0, 0, 0, 0, 0],
@@ -706,7 +706,7 @@ function levelHelp(opt_event) {
       style[rtl ? 'right' : 'left'] = '400px';
       origin = BlocklyGames.getElementById('resetButton');
     }
-  } else if (BlocklyGames.LEVEL === 4) {
+  } else if (BlocklyGames.LEVEL === 3) {
     if (!userBlocks.includes('maze_forever')) {
       if (!BlocklyInterface.workspace.remainingCapacity()) {
         content = BlocklyGames.getElementById('dialogHelpCapacity');
@@ -720,7 +720,7 @@ function levelHelp(opt_event) {
         origin = toolbar[3].getSvgRoot();
       }
     }
-  } else if (BlocklyGames.LEVEL === 5) {
+  } else if (BlocklyGames.LEVEL === 4) {
     if (!BlocklyInterface.workspace.remainingCapacity() &&
         (!userBlocks.includes('maze_forever') ||
          BlocklyInterface.workspace.getTopBlocks(false).length > 1)) {
